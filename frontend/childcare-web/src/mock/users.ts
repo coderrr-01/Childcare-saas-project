@@ -1,0 +1,66 @@
+import type { User } from '@/types';
+
+export const mockUsers: User[] = [
+  {
+    id: 'user-1',
+    email: 'superadmin@example.com',
+    firstName: 'System',
+    lastName: 'Administrator',
+    role: 'SUPER_ADMIN',
+    isActive: true,
+    organisationId: 'org-1',
+    lastLogin: '2026-09-02T08:00:00Z',
+  },
+  {
+    id: 'user-2',
+    email: 'orgadmin@example.com',
+    firstName: 'Sarah',
+    lastName: 'Mitchell',
+    role: 'ORG_ADMIN',
+    isActive: true,
+    organisationId: 'org-1',
+    centreId: 'centre-1',
+    lastLogin: '2026-09-02T08:15:00Z',
+  },
+  {
+    id: 'user-3',
+    email: 'director@example.com',
+    firstName: 'James',
+    lastName: 'Thompson',
+    role: 'CENTRE_ADMIN',
+    isActive: true,
+    centreId: 'centre-1',
+    organisationId: 'org-1',
+    lastLogin: '2026-09-03T07:30:00Z',
+  },
+  {
+    id: 'user-4',
+    email: 'educator@example.com',
+    firstName: 'Emily',
+    lastName: 'Chen',
+    role: 'EDUCATOR',
+    isActive: true,
+    centreId: 'centre-1',
+    organisationId: 'org-1',
+    lastLogin: '2026-09-03T07:45:00Z',
+  },
+  {
+    id: 'user-5',
+    email: 'parent@example.com',
+    firstName: 'Michael',
+    lastName: 'Wilson',
+    role: 'PARENT',
+    isActive: true,
+    centreId: 'centre-1',
+    organisationId: 'org-1',
+    lastLogin: '2026-09-02T18:30:00Z',
+  },
+];
+
+export const demoPasswords: Record<string, string> = {
+  'superadmin@example.com': 'Password123!',
+  'orgadmin@example.com': 'Password123!',
+  'director@example.com': 'Password123!',
+  'educator@example.com': 'Password123!',
+  'parent@example.com': 'Password123!',
+};
