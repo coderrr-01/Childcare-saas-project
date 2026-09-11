@@ -1,0 +1,53 @@
+Directory Structure
+database/
+├── DATABASE_DESIGN.md          (Architecture & design decisions)
+├── README.md                   (Setup & usage guide)
+├── erd/
+│   └── database-erd.md         (Entity relationship diagram)
+├── migrations/
+│   ├── V001__create_extensions.sql
+│   ├── V002__create_identity_tables.sql      (10 tables)
+│   ├── V003__create_organisation_tables.sql  (5 tables)
+│   ├── V004__create_child_family_tables.sql  (7 tables)
+│   ├── V005__create_enrolment_tables.sql     (3 tables)
+│   ├── V006__create_attendance_tables.sql    (2 tables)
+│   ├── V007__create_daily_care_tables.sql    (6 tables)
+│   ├── V008__create_health_tables.sql        (5 tables)
+│   ├── V009__create_medication_tables.sql    (3 tables)
+│   ├── V010__create_incident_tables.sql      (4 tables)
+│   ├── V011__create_learning_tables.sql      (3 tables)
+│   ├── V012__create_media_tables.sql         (2 tables)
+│   ├── V013__create_messaging_tables.sql     (3 tables)
+│   ├── V014__create_notification_tables.sql  (2 tables)
+│   ├── V015__create_document_tables.sql      (3 tables)
+│   ├── V016__create_consent_tables.sql       (3 tables)
+│   ├── V017__create_billing_tables.sql       (4 tables)
+│   ├── V018__create_audit_tables.sql         (1 table)
+│   └── V019__create_indexes.sql
+├── seeds/
+│   └── V100__seed_development_data.sql
+├── views/
+│   └── V200__create_reporting_views.sql
+└── scripts/
+    ├── create_database.sql
+    └── reset_database.sql
+Summary Statistics
+- 66 tables across 19 migrations
+- 5 reporting views
+- 50+ indexes (inline + dedicated)
+- 5 seed users (all demo roles)
+- 5 sample families with children, enrolments, attendance, medications, messages, notifications, invoices
+- All CHECK constraints, UNIQUE constraints, and foreign keys properly defined
+- Soft delete (deleted_at) on users, organisations, centres, children, families
+- NUMERIC(12,2) for all monetary values
+- TIMESTAMPTZ for all timestamps
+- Flyway-compatible naming (V001__, V002__, etc.)
+Key Design Decisions
+Decision	Rationale
+BIGINT over UUID	Better index performance, smaller storage, natural ordering
+CHECK constraints over ENUMs	Flexibility for future status additions
+Separate daily care tables	Proper querying per care type, not a generic daily_care
+Polymorphic media_links	Links media to children, stories, incidents without separate tables
+incident_status_history	Full workflow audit trail, not just a status column
+medication_administrations	Separate log of each dose administered
+No schema separation	Public schema with tenant IDs is simpler for Phase 1

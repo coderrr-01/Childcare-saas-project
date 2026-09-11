@@ -1,0 +1,31 @@
+com.penguinpeak.childcare
+│
+├── common
+│   ├── api
+│   ├── exception
+│   ├── security
+│   ├── tenant
+│   ├── audit
+│   ├── web
+│   ├── time
+│   └── constants
+│
+├── config
+│
+├── child                 ← later
+├── family                ← later
+├── enrolment             ← later
+├── attendance            ← later
+├── dailycare             ← later
+├── health                ← later
+├── medication            ← later
+├── incident              ← later
+├── learning              ← later
+├── media                 ← later
+├── messaging             ← later
+├── notification          ← later
+├── document              ← later
+├── consent               ← later
+├── billing               ← later
+│
+└── ChildcareApplication

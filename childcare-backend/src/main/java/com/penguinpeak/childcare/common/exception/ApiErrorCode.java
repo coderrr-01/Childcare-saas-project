@@ -1,0 +1,16 @@
+package com.penguinpeak.childcare.common.exception;
+
+public enum ApiErrorCode {
+    VALIDATION_ERROR,
+    RESOURCE_NOT_FOUND,
+    BUSINESS_ERROR,
+    CONFLICT,
+    UNAUTHORIZED,
+    FORBIDDEN,
+    BAD_REQUEST,
+    METHOD_NOT_ALLOWED,
+    MEDIA_TYPE_NOT_SUPPORTED,
+    RATE_LIMITED,
+    INTERNAL_SERVER_ERROR,
+    SERVICE_UNAVAILABLE
+}
