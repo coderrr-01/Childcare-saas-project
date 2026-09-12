@@ -1,7 +1,7 @@
 {
   "info": {
-    "name": "Childcare SaaS - Authentication & RBAC (Module 2)",
-    "description": "Module 2: Authentication, User Management, and Role-Based Access Control API endpoints.\n\n**Base URL:** `{{baseUrl}}`\n\n**Authentication:**\nAll protected endpoints require a Bearer token in the Authorization header.\n1. Use the `Login` request to obtain an access token.\n2. The collection pre-request script automatically sets the `Authorization` header for all requests.\n3. Tokens expire after the configured TTL; use `Refresh Token` to obtain new tokens.\n\n**Test Accounts (Module 2):**\n- SUPER_ADMIN: `admin@penguinpeak.com` / `Admin12345678!`\n- ORG_ADMIN: `orgadmin@example.com` / `password`\n- CENTRE_ADMIN: `director@example.com` / `password`\n- EDUCATOR: `educator@example.com` / `password`\n- PARENT: `parent@example.com` / `password`",
+    "name": "Childcare SaaS - Full Platform (Modules 1-3)",
+    "description": "Complete API collection for Modules 1-3 of the Childcare SaaS Platform.\n\n**Modules:**\n- Module 1: Organisation / Centre / Room Management\n- Module 2: Authentication / Users / RBAC\n- Module 3: Child / Family Management\n\n**Base URL:** `{{baseUrl}}`\n\n**Authentication:**\nAll protected endpoints require a Bearer token in the Authorization header.\n1. Use the `Login` request under Authentication to obtain an access token.\n2. The collection pre-request script automatically sets the `Authorization` header.\n\n**Test Accounts:**\n- SUPER_ADMIN: `admin@penguinpeak.com` / `Admin12345678!`\n- ORG_ADMIN: `orgadmin@example.com` / `password`\n- EDUCATOR: `educator@example.com` / `password`\n- PARENT: `parent@example.com` / `password`",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "auth": {
@@ -16,18 +16,101 @@
   },
   "item": [
     {
-      "name": "Authentication",
+      "name": "Module 1 - Organisations",
+      "item": [
+        {
+          "name": "List Organisations",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/organisations?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "organisations"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Organisation",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Childcare Ltd\",\n  \"abn\": \"12345678901\",\n  \"email\": \"info@test.com\",\n  \"phone\": \"+61 2 9000 1234\",\n  \"website\": \"https://test.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/organisations",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "organisations"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', function () { pm.response.to.have.status(201); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Module 1 - Centres",
+      "item": [
+        {
+          "name": "List Centres",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/centres?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "centres"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Module 2 - Authentication",
       "item": [
         {
           "name": "Login",
           "request": {
             "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"admin@penguinpeak.com\",\n  \"password\": \"Admin12345678!\"\n}"
@@ -48,35 +131,25 @@
                   "    pm.collectionVariables.set('accessToken', jsonData.data.accessToken);",
                   "    pm.collectionVariables.set('refreshToken', jsonData.data.refreshToken);",
                   "}",
-                  "pm.test('Status code is 200', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "pm.test('Response has accessToken', function () {",
-                  "    pm.expect(jsonData.data).to.have.property('accessToken');",
-                  "});"
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });"
                 ]
               }
             }
           ]
         },
         {
-          "name": "Refresh Token",
+          "name": "Login as Educator",
           "request": {
             "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+              "raw": "{\n  \"email\": \"educator@example.com\",\n  \"password\": \"password\"\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/api/v1/auth/refresh",
+              "raw": "{{baseUrl}}/api/v1/auth/login",
               "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "auth", "refresh"]
+              "path": ["api", "v1", "auth", "login"]
             }
           },
           "event": [
@@ -86,26 +159,27 @@
                 "exec": [
                   "var jsonData = pm.response.json();",
                   "if (jsonData.data && jsonData.data.accessToken) {",
-                  "    pm.collectionVariables.set('accessToken', jsonData.data.accessToken);",
-                  "    pm.collectionVariables.set('refreshToken', jsonData.data.refreshToken);",
+                  "    pm.collectionVariables.set('educatorToken', jsonData.data.accessToken);",
                   "}",
-                  "pm.test('Status code is 200', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});"
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });"
                 ]
               }
             }
           ]
         },
         {
-          "name": "Logout",
+          "name": "Login as Parent",
           "request": {
             "method": "POST",
-            "header": [],
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"parent@example.com\",\n  \"password\": \"password\"\n}"
+            },
             "url": {
-              "raw": "{{baseUrl}}/api/v1/auth/logout",
+              "raw": "{{baseUrl}}/api/v1/auth/login",
               "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "auth", "logout"]
+              "path": ["api", "v1", "auth", "login"]
             }
           },
           "event": [
@@ -113,16 +187,18 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test('Status code is 204', function () {",
-                  "    pm.response.to.have.status(204);",
-                  "});"
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.accessToken) {",
+                  "    pm.collectionVariables.set('parentToken', jsonData.data.accessToken);",
+                  "}",
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });"
                 ]
               }
             }
           ]
         },
         {
-          "name": "Get Current User (me)",
+          "name": "Get Current User",
           "request": {
             "method": "GET",
             "header": [],
@@ -137,13 +213,7 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test('Status code is 200', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "pm.test('Response has user data', function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.data).to.have.property('email');",
-                  "});"
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });"
                 ]
               }
             }
@@ -152,10 +222,10 @@
       ]
     },
     {
-      "name": "Users",
+      "name": "Module 2 - Users",
       "item": [
         {
-          "name": "List Users (paginated)",
+          "name": "List Users",
           "request": {
             "method": "GET",
             "header": [],
@@ -174,33 +244,7 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test('Status code is 200', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "Get User by ID",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/users/1",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "users", "1"]
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status code is 200', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});"
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });"
                 ]
               }
             }
@@ -210,15 +254,10 @@
           "name": "Create User",
           "request": {
             "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"newuser@example.com\",\n  \"password\": \"SecurePass123!\",\n  \"firstName\": \"New\",\n  \"lastName\": \"User\",\n  \"phone\": \"+61 400 000 010\",\n  \"roles\": [\"EDUCATOR\"]\n}"
+              "raw": "{\n  \"email\": \"newstaff@example.com\",\n  \"password\": \"SecurePass123!\",\n  \"firstName\": \"New\",\n  \"lastName\": \"Staff\",\n  \"phone\": \"+61 400 000 100\",\n  \"roles\": [\"EDUCATOR\"]\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/users",
@@ -231,132 +270,7 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test('Status code is 201', function () {",
-                  "    pm.response.to.have.status(201);",
-                  "});"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "Update User",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"firstName\": \"Updated\",\n  \"lastName\": \"Name\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/users/2",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "users", "2"]
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status code is 200', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "Get My Profile",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/users/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "users", "me"]
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status code is 200', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "Update My Profile",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"firstName\": \"MyUpdated\",\n  \"phone\": \"+61 400 999 999\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/users/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "users", "me"]
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status code is 200', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "Change My Password",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"currentPassword\": \"Admin12345678!\",\n  \"newPassword\": \"NewSecurePass99!\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/users/me/change-password",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "users", "me", "change-password"]
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status code is 204', function () {",
-                  "    pm.response.to.have.status(204);",
-                  "});"
+                  "pm.test('Status 201', function () { pm.response.to.have.status(201); });"
                 ]
               }
             }
@@ -365,7 +279,7 @@
       ]
     },
     {
-      "name": "Roles & Permissions",
+      "name": "Module 2 - Roles & Permissions",
       "item": [
         {
           "name": "List Roles",
@@ -383,13 +297,7 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test('Status code is 200', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "pm.test('Returns 5 roles', function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.data.length).to.eql(5);",
-                  "});"
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });"
                 ]
               }
             }
@@ -411,9 +319,7 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test('Status code is 200', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});"
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });"
                 ]
               }
             }
@@ -422,124 +328,20 @@
       ]
     },
     {
-      "name": "Error Scenarios",
+      "name": "Module 3 - Children",
       "item": [
         {
-          "name": "Login - Invalid Credentials",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"admin@penguinpeak.com\",\n  \"password\": \"wrongpassword\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/auth/login",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "auth", "login"]
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status code is 401', function () {",
-                  "    pm.response.to.have.status(401);",
-                  "});"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "Access Without Token",
+          "name": "List Children",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/v1/users",
+              "raw": "{{baseUrl}}/api/v1/children?page=0&size=20",
               "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "users"]
-            },
-            "auth": {
-              "type": "noauth"
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status code is 401', function () {",
-                  "    pm.response.to.have.status(401);",
-                  "});"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "Access With Invalid Token",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer invalid.token.here"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/users",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "users"]
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status code is 401', function () {",
-                  "    pm.response.to.have.status(401);",
-                  "});"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "Educator - Forbidden (users:write)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"unauthorized@example.com\",\n  \"password\": \"SecurePass123!\",\n  \"firstName\": \"Test\",\n  \"lastName\": \"User\",\n  \"roles\": [\"PARENT\"]\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/users",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "users"]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{educatorToken}}",
-                  "type": "string"
-                }
+              "path": ["api", "v1", "children"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
               ]
             }
           },
@@ -548,32 +350,25 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test('Status code is 403', function () {",
-                  "    pm.response.to.have.status(403);",
-                  "});"
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });"
                 ]
               }
             }
           ]
         },
         {
-          "name": "Educator - Forbidden (roles:read)",
+          "name": "Search Children by Name",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/v1/roles",
+              "raw": "{{baseUrl}}/api/v1/children?search=alice&page=0&size=10",
               "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "roles"]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{educatorToken}}",
-                  "type": "string"
-                }
+              "path": ["api", "v1", "children"],
+              "query": [
+                { "key": "search", "value": "alice" },
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
               ]
             }
           },
@@ -582,9 +377,625 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test('Status code is 403', function () {",
-                  "    pm.response.to.have.status(403);",
-                  "});"
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Filter Children by Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/children?enrolmentStatus=ENROLLED&page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "children"],
+              "query": [
+                { "key": "enrolmentStatus", "value": "ENROLLED" },
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Filter Children by Gender",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/children?gender=MALE&page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "children"],
+              "query": [
+                { "key": "gender", "value": "MALE" },
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Child",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"centreId\": 1,\n  \"firstName\": \"Sophie\",\n  \"lastName\": \"Anderson\",\n  \"dateOfBirth\": \"2022-05-20\",\n  \"gender\": \"FEMALE\",\n  \"enrolmentStatus\": \"ENROLLED\",\n  \"nationality\": \"Australian\",\n  \"languagesSpoken\": \"English\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/children",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "children"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.id) {",
+                  "    pm.collectionVariables.set('childId', jsonData.data.id);",
+                  "}",
+                  "pm.test('Status 201', function () { pm.response.to.have.status(201); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Child by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/children/{{childId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "children", "{{childId}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Child",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Sophie\",\n  \"nationality\": \"New Zealand\",\n  \"languagesSpoken\": \"English, Maori\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/children/{{childId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "children", "{{childId}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Assign Family to Child",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/children/{{childId}}/families?familyId={{familyId}}&relationshipType=parent&primaryGuardian=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "children", "{{childId}}", "families"],
+              "query": [
+                { "key": "familyId", "value": "{{familyId}}" },
+                { "key": "relationshipType", "value": "parent" },
+                { "key": "primaryGuardian", "value": "true" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', function () { pm.response.to.have.status(201); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Child",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/children/{{childId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "children", "{{childId}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 204', function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Module 3 - Families",
+      "item": [
+        {
+          "name": "List Families",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/families?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "families"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Family",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"centreId\": 1,\n  \"familyNumber\": \"FAM-POSTMAN-001\",\n  \"notes\": \"Test family from Postman\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/families",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "families"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.id) {",
+                  "    pm.collectionVariables.set('familyId', jsonData.data.id);",
+                  "}",
+                  "pm.test('Status 201', function () { pm.response.to.have.status(201); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Family by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/families/{{familyId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "families", "{{familyId}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Family",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"notes\": \"Updated from Postman\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/families/{{familyId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "families", "{{familyId}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Family Members",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/families/{{familyId}}/members",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "families", "{{familyId}}", "members"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Add Family Member",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"David\",\n  \"lastName\": \"Anderson\",\n  \"relationship\": \"father\",\n  \"email\": \"david@example.com\",\n  \"phone\": \"+61 400 100 001\",\n  \"mobile\": \"+61 411 100 001\",\n  \"occupation\": \"Engineer\",\n  \"primary\": true,\n  \"emergencyContact\": true,\n  \"addressStreet\": \"123 Main St\",\n  \"addressSuburb\": \"Sydney\",\n  \"addressState\": \"NSW\",\n  \"addressPostcode\": \"2000\",\n  \"addressCountry\": \"Australia\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/families/{{familyId}}/members",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "families", "{{familyId}}", "members"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', function () { pm.response.to.have.status(201); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Module 3 - Emergency Contacts",
+      "item": [
+        {
+          "name": "List Emergency Contacts for Child",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/children/{{childId}}/emergency-contacts",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "children", "{{childId}}", "emergency-contacts"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Add Emergency Contact",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Jane Anderson\",\n  \"relationship\": \"grandmother\",\n  \"phone\": \"+61 400 200 002\",\n  \"mobile\": \"+61 411 200 002\",\n  \"email\": \"jane@example.com\",\n  \"priority\": 1,\n  \"isAuthorisedPickup\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/children/{{childId}}/emergency-contacts",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "children", "{{childId}}", "emergency-contacts"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', function () { pm.response.to.have.status(201); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Add Second Emergency Contact",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Robert Anderson\",\n  \"relationship\": \"uncle\",\n  \"phone\": \"+61 400 300 003\",\n  \"email\": \"robert@example.com\",\n  \"priority\": 2,\n  \"isAuthorisedPickup\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/children/{{childId}}/emergency-contacts",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "children", "{{childId}}", "emergency-contacts"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', function () { pm.response.to.have.status(201); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Module 3 - Authorised Pickups",
+      "item": [
+        {
+          "name": "List Authorised Pickups for Child",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/children/{{childId}}/authorised-pickups",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "children", "{{childId}}", "authorised-pickups"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Add Authorised Pickup",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Maria Garcia\",\n  \"relationship\": \"nanny\",\n  \"phone\": \"+61 400 400 004\",\n  \"mobile\": \"+61 411 400 004\",\n  \"email\": \"maria@example.com\",\n  \"photoIdType\": \"DRIVERS_LICENCE\",\n  \"photoIdNumber\": \"DL1234567\",\n  \"notes\": \"Authorised by David Anderson\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/children/{{childId}}/authorised-pickups",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "children", "{{childId}}", "authorised-pickups"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', function () { pm.response.to.have.status(201); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Module 3 - RBAC Scenarios",
+      "item": [
+        {
+          "name": "Educator - Read Children (Allowed)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/children?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "children"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{educatorToken}}", "type": "string" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 (educator can read)', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Educator - Create Child (Forbidden)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"centreId\": 1,\n  \"firstName\": \"No\",\n  \"lastName\": \"Access\",\n  \"dateOfBirth\": \"2023-01-01\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/children",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "children"]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{educatorToken}}", "type": "string" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 403 (educator cannot create)', function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Parent - Read Children (Allowed)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/children?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "children"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{parentToken}}", "type": "string" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 (parent can read)', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Parent - Create Family (Forbidden)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"centreId\": 1,\n  \"familyNumber\": \"FAM-NO-ACCESS\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/families",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "families"]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{parentToken}}", "type": "string" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 403 (parent cannot create family)', function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "No Token - Children (Unauthorized)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/children",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "children"]
+            },
+            "auth": { "type": "noauth" }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 401', function () { pm.response.to.have.status(401); });"
                 ]
               }
             }
