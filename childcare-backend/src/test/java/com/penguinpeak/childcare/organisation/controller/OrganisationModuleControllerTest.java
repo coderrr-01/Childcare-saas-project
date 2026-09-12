@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.penguinpeak.childcare.authentication.security.JwtService;
 import com.penguinpeak.childcare.common.exception.GlobalExceptionHandler;
 import com.penguinpeak.childcare.common.exception.ResourceNotFoundException;
 import com.penguinpeak.childcare.common.web.RequestIdFilter;
@@ -23,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -33,6 +35,8 @@ class OrganisationModuleControllerTest {
     @MockitoBean private OrganisationService organisationService;
     @MockitoBean private CentreService centreService;
     @MockitoBean private RoomService roomService;
+    @MockitoBean private JwtService jwtService;
+    @MockitoBean private UserDetailsService userDetailsService;
     @Test void createsOrganisationInStandardEnvelope() throws Exception {
         given(organisationService.create(any())).willReturn(new OrganisationResponse(1L, "Peak", null, null, null, null, null, null, null, null, null, "AU", "Australia/Sydney", true, null, null));
         mockMvc.perform(post("/api/v1/organisations").header("X-Request-ID", "organisation-1").contentType(MediaType.APPLICATION_JSON).content("{\"name\":\"Peak\"}"))

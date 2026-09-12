@@ -1,0 +1,3 @@
+package com.penguinpeak.childcare.authentication.dto.request;
+import jakarta.validation.constraints.NotBlank;
+public record RefreshTokenRequest(@NotBlank String refreshToken) { }

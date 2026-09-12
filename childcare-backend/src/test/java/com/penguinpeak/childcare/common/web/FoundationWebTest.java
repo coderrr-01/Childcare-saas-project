@@ -20,12 +20,15 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Map;
+import com.penguinpeak.childcare.authentication.security.JwtService;
 import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,6 +41,8 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(controllers = FoundationWebTest.FoundationController.class)
 @Import({GlobalExceptionHandler.class, RequestIdFilter.class, FoundationWebTest.FoundationController.class})
 class FoundationWebTest {
+    @MockitoBean private JwtService jwtService;
+    @MockitoBean private UserDetailsService userDetailsService;
     @Autowired
     private MockMvc mockMvc;
 

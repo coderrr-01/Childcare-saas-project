@@ -51,6 +51,30 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 "The requested operation conflicts with the current resource state.", request, null);
     }
 
+    @ExceptionHandler(com.penguinpeak.childcare.authentication.exception.AuthenticationFailedException.class)
+    ResponseEntity<ProblemDetail> handleAuthenticationFailed(
+            com.penguinpeak.childcare.authentication.exception.AuthenticationFailedException exception,
+            HttpServletRequest request) {
+        return problem(HttpStatus.UNAUTHORIZED, ApiErrorCode.UNAUTHORIZED, "Authentication failed",
+                "Invalid email or password.", request, null);
+    }
+
+    @ExceptionHandler(org.springframework.security.authorization.AuthorizationDeniedException.class)
+    ResponseEntity<ProblemDetail> handleAuthorizationDenied(
+            org.springframework.security.authorization.AuthorizationDeniedException exception,
+            HttpServletRequest request) {
+        return problem(HttpStatus.FORBIDDEN, ApiErrorCode.FORBIDDEN, "Forbidden",
+                "You do not have permission to access this resource.", request, null);
+    }
+
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    ResponseEntity<ProblemDetail> handleAccessDenied(
+            org.springframework.security.access.AccessDeniedException exception,
+            HttpServletRequest request) {
+        return problem(HttpStatus.FORBIDDEN, ApiErrorCode.FORBIDDEN, "Forbidden",
+                "You do not have permission to access this resource.", request, null);
+    }
+
     @ExceptionHandler(UnauthorizedException.class)
     ResponseEntity<ProblemDetail> handleUnauthorized(UnauthorizedException exception, HttpServletRequest request) {
         return problem(HttpStatus.UNAUTHORIZED, ApiErrorCode.UNAUTHORIZED, "Unauthorized",
